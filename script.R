@@ -1,7 +1,7 @@
 library(tidyverse)
 library(rvest)
 library(RSelenium)
-library(usmpa)
+library(usmap)
 
 rD <- rsDriver(
   port = 4548L,
@@ -40,12 +40,18 @@ for (x in states_list) {
   #Begin states page
   message(x)
   
+  #get state count
   state_metadata <- remDr$findElement("css selector", "h3.f6")
   count_text <- state_metadata$getElementAttribute("textContent")
   message(count_text)
   count_text -> state_counts[which(state_counts$State==x, arr.ind=TRUE)[1],]$Count
   state_counts$Count <- str_extract(state_counts$Count,regexp)
 
+  #begin searching next level
+  towns <- remDr$findElements("css selector", ".mt3")
+  towns.html <- lapply(towns, function(x){x$getElementAttribute("link-identifier")})
+  towns_list <- unlist(towns.html)
+  
 
 
   #return to homepage
