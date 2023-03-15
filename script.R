@@ -16,14 +16,14 @@ rD <- rsDriver(
 )
 
 remDr <- rD[["client"]]
-remDr$setTimeout(type = "implicit", 3000)
+remDr$setTimeout(type = "implicit", 5000)
 
 url <- "https://www.walmart.com/store-directory"
-delay <- 2
+delay <- 5
 
 remDr$navigate(url)
 
-#Sys.sleep(runif(delay))
+Sys.sleep(runif(delay))
 
 states <- remDr$findElements("css selector", ".mt3")
 states.html <- lapply(states, function(x){x$getElementAttribute("link-identifier")})
@@ -48,12 +48,38 @@ for (x in states_list) {
   state_counts$Count <- str_extract(state_counts$Count,regexp)
 
   #begin searching next level
-  towns <- remDr$findElements("css selector", ".mt3")
+  towns <- remDr$findElements("css selector", "a.dark-gray.no-underline.dbi.f6")
   towns.html <- lapply(towns, function(x){x$getElementAttribute("link-identifier")})
   towns_list <- unlist(towns.html)
+  towns_list <- towns_list[2:length(towns_list)]
   
-
-
+  Sys.sleep(runif(delay))
+  
+  #insert for loop here
+  town_length <- length(towns_list)
+  for (count in 1:length(towns_list)) {
+    Sys.sleep(runif(delay))
+    index <- sample(1:length(towns_list),1)
+    y <- towns_list[index]
+    towns_list <- towns_list[- index]
+    message(length(towns_list))
+    
+    Sys.sleep(runif(delay))
+    
+    town_element <- remDr$findElement("link text", y)
+    town_element$clickElement()
+    #Begin states page
+    message(y)
+    
+    #get data
+    
+    return_name <- paste(x," Walmart Stores",sep="")
+    
+    Sys.sleep(runif(delay))
+    
+    remDr$goBack()
+  }
+  
   #return to homepage
   test <- remDr$findElement("link text", "U.S. Walmart Stores")
   test$clickElement()
